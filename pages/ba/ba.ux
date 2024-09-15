@@ -1,0 +1,175 @@
+<template>
+    <div class="bg" onswipe="exit">
+        <!-- biaodan -->
+        <list class="bg" style="left: 3px;width: 186px;padding-top:149px;padding-bottom:86px" id="list" bounces="true">
+            <list-item for="{{list}}" onclick="chou({{$idx}})" style="height: 110px;flex-wrap: wrap;background-color: #262626;margin-bottom:8px;border-radius: 27px;"type="aa">
+                <text style="position: absolute;left:12px;top:12px;width: 77px;">{{$item.name}}</text>
+                <img src="{{$item.img}}" style="position: absolute;left: 97px;top: 12px;width: 77px;height: 86px;border-radius: 20px;"/>
+            </list-item>
+        </list>
+        <!-- 渐变遮罩 -->
+        <img src="/common/tblack.png"/>
+        <img src="/common/bblack.png" style="position: absolute; top: 372px;"/>
+        <!-- 模式更换 -->
+        <text onclick="changemode" if="{{!ab}}"class=top>模式:{{mode}}</text>
+        <text else class=top>点数:{{historyNUM}}</text>
+        <!-- 关于按钮 -->
+        <img src="/common/info.png"onclick="info()" style="position: absolute;left: 45px; bottom: 6px;" show="{{!ab}}"/>
+        <!-- 抽奖页面 -->
+        <div class="bg" if={{c10}} onclick="showall()">
+            <img src="/common/ba/bg1.png" class="bg"/>
+            <div for="{{history.slice(0,10)}}" style="position: absolute;width: 70px;height: 70px;"id="a{{$idx}}">
+                <img src="/common/ba/bg.png"/>
+                <img src="{{$item.img}}"style="position: absolute;width: 62px;height: 70px;left:4px"show='{{!isshow}}'/>
+                <img src="/common/ba/{{$item.star}}.png"style="position: absolute"show='{{isshow}}'/>
+            </div>
+        </div>
+        <div class="bg" if={{c}} onclick="showall()">
+            <img src="/common/ba/bg1.png" class="bg"/>
+            <img src="/common/ba/bg.png" class="dan"/>
+            <img src="{{history[0].img}}"style="position: absolute;left: 37px; top: 179px; width: 118px;height: 133px;"show='{{!isshow}}'/>
+            <img src="/common/ba/{{history[0].star}}.png"class="dan"show='{{isshow}}'/>
+        </div>
+        <!--返回-->
+        <img src="/common/back.png"onclick="exit('e')" style="position: absolute;left: 45px; top: 6px;"/>
+    </div>
+</template>
+  
+<style>
+.bg{
+    position: absolute;
+    width: 192px;
+    height: 490px;
+    background-color: black;
+}
+text{
+    font-size: 30px;
+    font-weight: bold;
+    text-align: left;
+    color: #FFFFFF;
+}
+.dan{
+    position: absolute;
+    left: 24px;
+    top: 173px;
+    width: 144px;
+    height: 144px;
+}
+.top{position: absolute;left:3px;top:84px;width: 186px;height: 58px;background-color: #262626;border-radius: 20px;text-align: center;border: 3px solid rgba(255, 255, 255, 0.06);}
+</style>
+  
+<script>
+import folme from '@system.folme';
+import router from '@system.router';
+import storage from "@system.storage";
+let that
+//卡池创建
+const list1=['千夏', '好美', '小玉', '志美子', '明日奈', '春香', '朱莉',  '琴里', '芹奈',  '菲娜', '铃美'],
+list2=['优香', '佳代子', '千世', '明里', '晴', '枫香', '桃', '桐乃', '椿','爱理', '歌原','茜', '玛丽', '睦月', '纯子', '绫音', '花子', '花江', '芹香', '莲见', '静子'],
+list3=['三森', '亚子', '亚津子', '伊吕波', '伊织', '优', '兔女郎时', '兔女郎明日奈', '兔女郎茜', '切利诺', '南', '和纱', '咲', '响', '圣诞花江', '圣诞芹娜', '夏', '女仆爱丽丝', '宫子', '小春', '小雪', '尼禄', '常服纱绫', '幼瞬', '应援歌原', '康娜', '心奈', '惠', '新年佳代子', '新年春香', '新年纯子', '新年芹香', '日向', '日和', '日奈', '日富美', '日鞠', '时雨', '星野', '晴奈', '月咏', '果穗', '枫', '柚子', '梓', '樱子', '泉', '泉奈', '泳装日富美', '泳装若藻', '泳装野宫', '温泉切利诺', '温泉千夏', '温泉和香', '濑名', '爱丽丝', '爱露', '瑠美', '白子', '真寻', '真白', '真纪', '真里奈', '瞬', '纱织', '纱绫', '绿', '美咲', '美弥', '美游', '艾米', '花凛', '萌绘', '董', '诺亚', '铃纱', '骑行白子', '鹤城']
+class kachi{
+    constructor(name,pl=0,p3=0.03,p2=0.185,p1=0.785){
+        this.name=name
+        this.p1=p1
+        this.p2=p2
+        this.p3=p3
+        this.pl=pl
+        if(pl)this.img="/common/ba/three/"+name+".png"
+        else this.img="/common/ba/three/美游.png"
+    }
+    chou(){
+        let temp=Math.random()
+        that.historyNUM++
+        if(!((that.historyNUM)%10)){
+            if(temp<this.pl){push(this.name,'three');return}
+            temp-=this.pl
+            if(temp<this.p3){push(list3[Math.floor(Math.random()*list3.length)],'three');return}
+            else{push(list2[Math.floor(Math.random()*list2.length)],'two');return}
+        }else{
+            if(temp<this.pl){push(this.name,'three');return}
+            temp-=this.pl
+            if(temp<this.p3){push(list3[Math.floor(Math.random()*list3.length)],'three');return}
+            temp-=this.p3
+            if(temp<this.p2){push(list2[Math.floor(Math.random()*list2.length)],'two');return}
+            else{push(list1[Math.floor(Math.random()*list1.length)],'one');return}
+        }
+    }
+    chou10(){
+        for (let i = 0; i < 10; i++) {
+            this.chou()
+        }
+    }
+}
+const listka=[new kachi('常驻')];['泳装星野','未花','若藻'].forEach(e => {listka.push(new kachi(e,0.004,0.06,0.17,0.77))});
+['体操优香', '体操玛丽', '兔女郎尼禄', '兔女郎花凛', '新年晴奈', '新年枫香', '新年爱露', '新年睦月', '时',  '泳装伊织', '泳装千世',  '泳装梓', '泳装泉奈', '泳装真白', '渚', ].forEach(e => {listka.push(new kachi(e,0.007,0.023))});
+
+function push(name,star){
+    if(that.history.unshift({name:name,star:star,img:`/common/ba/${star}/${name}.png`})>50){that.history=that.history.slice(0,50)}
+}
+
+export default {
+    private: {
+        ab:false,
+        c10:false,c:false,
+        p:"",
+        list:listka,
+        history:[],
+        historyNUM:0,mode:'单抽',isshow:true
+    },onInit(){
+        if(!!this.$app.$def.fuckyouhacker!=!0||!(this.$app.$def.motherOfHacker=='died'))this.$app.exit()
+        that=this
+        storage.get({key:"ba",success:(data)=>{
+            if(data){
+                data=JSON.parse(data)
+                that.history=data.history
+                that.historyNUM=data.num
+            }
+        }})
+    },
+    exit(a) {
+            if(a.direction=='right'||a=="e"){
+            if(this.c10||this.c)this.c10=false,this.c=false
+            else if(this.ab){
+            this.ab=false
+            this.list=listka
+            this.$element("list").scrollTo({index: 0})
+            }
+            else router.back()
+        }
+    },onBackPress(){
+        this.exit("e")
+        return true
+    },chou(num){
+        if(this.ab)return
+        this.isshow=true
+        if(this.mode=='单抽'){
+            this.list[num].chou()
+            this.c=true
+        }
+        else{
+            this.list[num].chou10()
+            this.c10=true
+        }
+        setTimeout(()=>{for (let i = 0; i <10; i++) {
+            folme.to({id:'a'+i,toState:{translateX:(i%2)?20:102,translateY:Math.floor(i/2)*73+88},config:{duration:0.1,delay:i*0.05}})
+        }},200)
+        let save={
+            num:this.historyNUM,
+            history:this.history
+        }
+        storage.set({
+		key: "ba",
+		value: JSON.stringify(save)})
+    },info(){
+        this.ab=true
+        this.list=this.history
+        this.$element("list").scrollTo({index: 0})
+    },changemode(){
+        if(this.mode=='单抽'){
+            this.mode="十抽"
+        }else this.mode="单抽"
+    },showall(){
+        this.isshow=false
+    }
+  }
+</script>

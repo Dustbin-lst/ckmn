@@ -1,0 +1,33 @@
+{
+  "package": "com.lst.ck",
+  "name": "抽卡模拟器",
+  "versionName": "1.0",
+  "versionCode": 2,
+  "minPlatformVersion": 1000,
+  "icon": "/common/logo.png",
+  "deviceTypeList": [
+    "watch"
+  ],
+  "features": [
+    { "name": "system.file" },
+    { "name": "system.storage" },
+    { "name": "system.prompt" }
+  ],
+  "config": {
+    "logLevel": "log",
+    "designWidth": 490
+  },
+  "router": {
+    "entry": "pages/index",
+    "pages": {
+      "pages/index": {
+        "component": "index"
+      },
+      "pages/ba": {
+        "component": "ba"
+      },"pages/cs": {
+        "component": "cs"
+      }
+    }
+  }
+}

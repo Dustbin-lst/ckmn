@@ -1,0 +1,79 @@
+<template>
+  <div class="bg" onswipe="exit">
+    <!-- biaodan -->
+    <list class="bg" style="left: 3px;width: 186px;padding-top:86px;padding-bottom:86px" id="list" bounces="true">
+      <list-item for="{{list}}" onclick="jump({{$item.url}})" style="height: 110px;flex-wrap: wrap;background-color: #262626;margin-bottom:8px;border-radius: 27px;"type="aa">
+        <text style="position: absolute;left:12px;top:12px;width:162px;height: 42px;">{{$item.name}}</text>
+        <text style="position: absolute;left: 12px;top: 61px;width: 162px;font-size: 28px;color: #A8A8A8;">{{$item.d}}</text>
+      </list-item>
+    </list>
+    <!-- 渐变遮罩 -->
+    <img src="/common/tblack.png"/>
+    <img src="/common/bblack.png" style="position: absolute; top: 372px;"/>
+    <!-- 关于 -->
+    <img src="/common/info.png"onclick="info()" style="position: absolute;left: 45px; bottom: 6px;"/>
+    <scroll class="bg" if="{{ab}}" scroll-y="true" bounces="true">
+			<img src="/common/about.png" />
+    </scroll>
+    <!--返回-->
+    <img src="/common/back.png"onclick="exit('e')" style="position: absolute;left: 45px; top: 6px;"/>
+	</div>
+</template>
+
+<style>
+.bg{
+  position: absolute;
+  width: 192px;
+  height: 490px;
+  background-color: black;
+}
+text{
+  font-size: 30px;
+  font-weight: bold;
+  text-align: left;
+  color: #FFFFFF;
+}
+.btn{
+  width: 60px;
+  height: 60px;
+  border-radius: 99px;
+  background-color: #262626;
+  border: 3px solid rgba(255, 255, 255, 0.06);
+}
+</style>
+
+<script>
+import router from '@system.router' 
+let that
+class game{
+  constructor(name,d,url){
+    this.name=name
+    this.d=d
+    this.url=url
+  }
+}
+export default {
+  private: {
+    ab:false,
+    p:"",
+    list:[new game('碧蓝档案','炼铜游戏','pages/ba'),new game('CS2','赌狗游戏','pages/cs'),{name:'别的游戏',d:"持续更新中"}],
+  },onInit(){
+    that=this
+  },
+  exit(a) {
+  		if(a.direction=='right'||a=="e"){
+        if(this.ab){
+          this.ab=false
+        }
+        else this.$app.exit()
+      }
+	},onBackPress(){
+    this.exit("e")
+    return true
+  },jump(url){
+    router.push({uri: url})
+  },info(){
+    this.ab=true
+  }
+}
+</script>
